@@ -61,7 +61,7 @@
     }
 
     try {
-      return await getAllAlbums({ assetId: asset.id });
+      return await getAllAlbums({ assetId: asset.id }).then((r) => r.items);
     } catch (error) {
       handleError(error, 'Error getting asset album membership');
       return [];

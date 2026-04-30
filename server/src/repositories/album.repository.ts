@@ -101,8 +101,8 @@ export class AlbumRepository {
       .executeTakeFirst();
   }
 
-  @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID] })
-  getByAssetId(ownerId: string, assetId: string) {
+  @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID, DummyValue.NUMBER, DummyValue.NUMBER] })
+  getByAssetId(ownerId: string, assetId: string, limit?: number, offset?: number) {
     return this.db
       .selectFrom('album')
       .selectAll('album')
@@ -119,6 +119,7 @@ export class AlbumRepository {
       .where('album.deletedAt', 'is', null)
       .select(withAlbumUsers(ownerId))
       .orderBy('album.createdAt', 'desc')
+      .$if(limit !== undefined, (qb) => qb.limit(limit!).offset(offset ?? 0))
       .execute();
   }
 
@@ -183,8 +184,8 @@ export class AlbumRepository {
     );
   }
 
-  @GenerateSql({ params: [DummyValue.UUID] })
-  getOwned(ownerId: string) {
+  @GenerateSql({ params: [DummyValue.UUID, DummyValue.NUMBER, DummyValue.NUMBER] })
+  getOwned(ownerId: string, limit?: number, offset?: number) {
     return this.db
       .selectFrom('album')
       .selectAll('album')
@@ -198,14 +199,15 @@ export class AlbumRepository {
       .select(withAlbumUsers(ownerId))
       .select(withSharedLink)
       .orderBy('album.createdAt', 'desc')
+      .$if(limit !== undefined, (qb) => qb.limit(limit!).offset(offset ?? 0))
       .execute();
   }
 
   /**
    * Get albums shared with and shared by owner.
    */
-  @GenerateSql({ params: [DummyValue.UUID] })
-  getShared(ownerId: string) {
+  @GenerateSql({ params: [DummyValue.UUID, DummyValue.NUMBER, DummyValue.NUMBER] })
+  getShared(ownerId: string, limit?: number, offset?: number) {
     return this.db
       .selectFrom('album')
       .selectAll('album')
@@ -241,14 +243,15 @@ export class AlbumRepository {
       .select(withAlbumUsers(ownerId))
       .select(withSharedLink)
       .orderBy('album.createdAt', 'desc')
+      .$if(limit !== undefined, (qb) => qb.limit(limit!).offset(offset ?? 0))
       .execute();
   }
 
   /**
    * Get albums of owner that are _not_ shared
    */
-  @GenerateSql({ params: [DummyValue.UUID] })
-  getNotShared(ownerId: string) {
+  @GenerateSql({ params: [DummyValue.UUID, DummyValue.NUMBER, DummyValue.NUMBER] })
+  getNotShared(ownerId: string, limit?: number, offset?: number) {
     return this.db
       .selectFrom('album')
       .selectAll('album')
@@ -274,6 +277,7 @@ export class AlbumRepository {
       .select(withSharedLink)
       .select(withAlbumUsers(ownerId))
       .orderBy('album.createdAt', 'desc')
+      .$if(limit !== undefined, (qb) => qb.limit(limit!).offset(offset ?? 0))
       .execute();
   }
 

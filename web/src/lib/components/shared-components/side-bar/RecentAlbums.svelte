@@ -10,7 +10,7 @@
 
   const refreshAlbums = async () => {
     try {
-      const allAlbums = await getAllAlbums({});
+      const allAlbums = (await getAllAlbums({ limit: 10 })).items;
       albums = allAlbums.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1)).slice(0, 3);
       userInteraction.recentAlbums = albums;
     } catch (error) {

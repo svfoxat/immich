@@ -484,6 +484,11 @@ export type AlbumResponseDto = {
     /** Last update date */
     updatedAt: string;
 };
+export type AlbumsResponseDto = {
+    /** Whether there are more albums */
+    hasNextPage: boolean;
+    items: AlbumResponseDto[];
+};
 export type AlbumUserCreateDto = {
     role: AlbumUserRole;
     /** User ID */
@@ -3657,15 +3662,19 @@ export function getUserStatisticsAdmin({ id, isFavorite, isTrashed, visibility }
 /**
  * List all albums
  */
-export function getAllAlbums({ assetId, shared }: {
+export function getAllAlbums({ assetId, limit, offset, shared }: {
     assetId?: string;
+    limit?: number;
+    offset?: number;
     shared?: boolean;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: AlbumResponseDto[];
+        data: AlbumsResponseDto;
     }>(`/albums${QS.query(QS.explode({
         assetId,
+        limit,
+        offset,
         shared
     }))}`, {
         ...opts

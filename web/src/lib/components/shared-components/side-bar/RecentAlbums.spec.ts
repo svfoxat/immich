@@ -13,7 +13,7 @@ describe('RecentAlbums component', () => {
       albumFactory.build({ updatedAt: '2024-01-09T00:00:00Z' }),
     ];
 
-    sdkMock.getAllAlbums.mockResolvedValueOnce([...albums]);
+    sdkMock.getAllAlbums.mockResolvedValueOnce({ items: [...albums], hasNextPage: false });
     render(RecentAlbums);
 
     expect(sdkMock.getAllAlbums).toBeCalledTimes(1);

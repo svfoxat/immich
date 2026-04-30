@@ -21,7 +21,6 @@ import { BaseService } from 'src/services/base.service';
 import { addAssets, removeAssets } from 'src/utils/asset.util';
 import { asDateString } from 'src/utils/date';
 import { getPreferences } from 'src/utils/preferences';
-
 @Injectable()
 export class AlbumService extends BaseService {
   async getStatistics(auth: AuthDto): Promise<AlbumStatisticsResponseDto> {
@@ -38,18 +37,19 @@ export class AlbumService extends BaseService {
     };
   }
 
-  async getAll({ user: { id: ownerId } }: AuthDto, { assetId, shared }: GetAlbumsDto): Promise<AlbumResponseDto[]> {
+  async getAll({ user: { id: ownerId } }: AuthDto, { assetId, shared, limit, offset }
+  : {assetId?: string, shared?: boolean, limit: number, offset: number}): Promise<AlbumResponseDto[]> {
     await this.albumRepository.updateThumbnails();
 
     let albums: MapAlbumDto[];
     if (assetId) {
-      albums = await this.albumRepository.getByAssetId(ownerId, assetId);
+      albums = await this.albumRepository.getByAssetId(ownerId, assetId, limit, offset);
     } else if (shared === true) {
-      albums = await this.albumRepository.getShared(ownerId);
+      albums = await this.albumRepository.getShared(ownerId, limit, offset);
     } else if (shared === false) {
-      albums = await this.albumRepository.getNotShared(ownerId);
+      albums = await this.albumRepository.getNotShared(ownerId, limit, offset);
     } else {
-      albums = await this.albumRepository.getOwned(ownerId);
+      albums = await this.albumRepository.getOwned(ownerId, limit, offset);
     }
 
     // Get asset count for each album. Then map the result to an object:
