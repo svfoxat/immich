@@ -11,6 +11,8 @@
   import { createAlbumAndRedirect } from '$lib/utils/album-utils';
   import { t } from 'svelte-i18n';
   import type { PageData } from './$types';
+  import { type AlbumResponseDto, getAllAlbums } from '@immich/sdk';
+  import { onMount } from 'svelte';
 
   interface Props {
     data: PageData;
@@ -20,6 +22,12 @@
 
   let searchQuery = $state('');
   let albumGroups: string[] = $state([]);
+  let albums = $state<AlbumResponseDto[]>([]);
+
+  onMount(async () => {
+    const result = await getAllAlbums({ limit: 1000 });
+    albums = result.items;
+  });
 </script>
 
 <UserPageLayout title={data.meta.title} use={[[scrollMemory, { routeStartsWith: Route.albums() }]]}>
@@ -44,8 +52,8 @@
   </div>
 
   <Albums
-    ownedAlbums={data.albums}
-    sharedAlbums={data.sharedAlbums}
+    ownedAlbums={albums}
+    sharedAlbums={data.sharedAlbums.items}
     userSettings={$albumViewSettings}
     allowEdit
     {searchQuery}

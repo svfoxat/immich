@@ -69,6 +69,8 @@ const GetAlbumsSchema = z
       .optional()
       .describe('Filter by shared status: true = only shared, false = not shared, undefined = all owned albums'),
     assetId: z.uuidv4().optional().describe('Filter albums containing this asset ID (ignores shared parameter)'),
+    limit: z.coerce.number().int().min(1).optional().describe('Limit the number of albums returned'),
+    offset: z.coerce.number().int().min(0).optional().describe('Offset for pagination'),
   })
   .meta({ id: 'GetAlbumsDto' });
 
@@ -135,6 +137,13 @@ export const AlbumResponseSchema = z
   })
   .meta({ id: 'AlbumResponseDto' });
 
+const AlbumsResponseSchema = z
+  .object({
+    hasNextPage: z.boolean().describe('Whether there are more albums'),
+    items: z.array(AlbumResponseSchema),
+  })
+  .meta({ id: 'AlbumsResponseDto' });
+
 export class AddUsersDto extends createZodDto(AddUsersSchema) {}
 export class AlbumUserCreateDto extends createZodDto(AlbumUserCreateSchema) {}
 export class CreateAlbumDto extends createZodDto(CreateAlbumSchema) {}
@@ -145,6 +154,7 @@ export class GetAlbumsDto extends createZodDto(GetAlbumsSchema) {}
 export class AlbumStatisticsResponseDto extends createZodDto(AlbumStatisticsResponseSchema) {}
 export class UpdateAlbumUserDto extends createZodDto(UpdateAlbumUserSchema) {}
 export class AlbumResponseDto extends createZodDto(AlbumResponseSchema) {}
+export class AlbumsResponseDto extends createZodDto(AlbumsResponseSchema) {}
 class AlbumUserResponseDto extends createZodDto(AlbumUserResponseSchema) {}
 
 export type MapAlbumDto = {
