@@ -7,6 +7,7 @@ import {
   AlbumsAddAssetsDto,
   AlbumsAddAssetsResponseDto,
   AlbumStatisticsResponseDto,
+  AlbumsResponseDto,
   CreateAlbumDto,
   GetAlbumsDto,
   UpdateAlbumDto,
@@ -19,6 +20,7 @@ import { ApiTag, Permission } from 'src/enum';
 import { Auth, Authenticated } from 'src/middleware/auth.guard';
 import { AlbumService } from 'src/services/album.service';
 import { ParseMeUUIDPipe, UUIDParamDto } from 'src/validation';
+import { paginationHelper } from 'src/utils/pagination';
 
 @ApiTags(ApiTag.Albums)
 @Controller('albums')
@@ -32,8 +34,17 @@ export class AlbumController {
     description: 'Retrieve a list of albums available to the authenticated user.',
     history: new HistoryBuilder().added('v1').beta('v1').stable('v2'),
   })
-  getAllAlbums(@Auth() auth: AuthDto, @Query() query: GetAlbumsDto): Promise<AlbumResponseDto[]> {
-    return this.service.getAll(auth, query);
+  async getAllAlbums(@Auth() auth: AuthDto, @Query() query: GetAlbumsDto): Promise<AlbumsResponseDto> {
+    const limit = query.limit ?? 25;
+    const offset = query.offset ?? 0;
+    const albums = await this.service.getAll(auth, {
+      assetId: query.assetId,
+      shared: query.shared,
+      limit: limit + 1,
+      offset,
+    });
+
+    return paginationHelper(albums, limit);
   }
 
   @Post()

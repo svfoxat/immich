@@ -230,7 +230,7 @@
     </InfoRow>
 
     <InfoRow icon={mdiBookmarkOutline} borderBottom={false} title={$t('albums')}>
-      {#await getAllAlbums({ assetId: asset.id })}
+      {#await getAllAlbums({ assetId: asset.id }).then((r) => r.items)}
         {$t('scanning_for_album')}
       {:then albums}
         {$t('in_albums', { values: { count: albums.length } })}
