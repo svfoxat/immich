@@ -3,7 +3,7 @@
   import { user } from '$lib/stores/user.store';
   import { getContextMenuPositionFromEvent, type ContextMenuPosition } from '$lib/utils/context-menu';
   import { getShortDateRange } from '$lib/utils/date-time';
-  import type { AlbumResponseDto } from '@immich/sdk';
+  import {type AlbumResponseDto, getAlbumInfo, searchAssets} from '@immich/sdk';
   import { IconButton } from '@immich/ui';
   import { mdiDotsVertical } from '@mdi/js';
   import { t } from 'svelte-i18n';
@@ -16,7 +16,6 @@
     preload?: boolean;
     onShowContextMenu?: ((position: ContextMenuPosition) => unknown) | undefined;
   }
-
   let {
     album,
     showOwner = false,
@@ -26,6 +25,17 @@
     onShowContextMenu = undefined,
   }: Props = $props();
 
+  let albumDetail = $state(album);
+
+  async function loadAlbumDetail() {
+    await getAlbumInfo({
+      id: album.id,
+    }).then((data) => {
+        albumDetail = data
+      });
+  }
+
+  loadAlbumDetail()
   const showAlbumContextMenu = (e: MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -34,12 +44,12 @@
 </script>
 
 <div
-  class="group relative rounded-2xl border border-transparent p-5 hover:bg-gray-100 hover:border-gray-200 dark:hover:border-gray-800 dark:hover:bg-gray-900"
+  class="group relative border border-transparent hover:bg-gray-100 hover:border-gray-200 dark:hover:border-gray-800 dark:hover:bg-gray-900"
   data-testid="album-card"
 >
   {#if onShowContextMenu}
     <div
-      id="icon-{album.id}"
+      id="icon-{albumDetail.id}"
       class="absolute end-6 top-6 opacity-0 group-hover:opacity-100 focus-within:opacity-100"
       data-testid="context-button-parent"
     >
@@ -56,31 +66,31 @@
     </div>
   {/if}
 
-  <AlbumCover {album} {preload} class="transition-all duration-300 hover:shadow-lg" />
+  <AlbumCover album={albumDetail} {preload} class="transition-all duration-300 hover:shadow-lg" />
 
-  <div class="mt-4">
+  <div class="backdrop-blur p-1">
     <p
-      class="w-full leading-6 text-lg line-clamp-2 font-semibold text-black dark:text-white group-hover:text-primary"
+      class="w-full leading-6 text-md line-clamp-1 font-semibold text-black dark:text-white group-hover:text-primary"
       data-testid="album-name"
-      title={album.albumName}
+      title={albumDetail.albumName}
     >
       {album.albumName}
     </p>
 
-    {#if showDateRange && album.startDate && album.endDate}
-      <p class="flex text-sm dark:text-immich-dark-fg capitalize">
-        {getShortDateRange(album.startDate, album.endDate)}
-      </p>
-    {/if}
 
     <span class="flex gap-2 text-sm dark:text-immich-dark-fg" data-testid="album-details">
+    {#if showDateRange && albumDetail.startDate && albumDetail.endDate}
+      <p class="flex text-sm dark:text-immich-dark-fg capitalize">
+        {getShortDateRange(albumDetail.startDate, albumDetail.endDate)}
+      </p>
+    {/if}
       {#if showItemCount}
         <p>
-          {$t('items_count', { values: { count: album.assetCount } })}
+          {$t('items_count', { values: { count: albumDetail.assetCount } })}
         </p>
       {/if}
 
-      {#if (showOwner || album.shared) && showItemCount}
+      {#if (showOwner || albumDetail.shared) && showItemCount}
         <p>•</p>
       {/if}
 
@@ -92,7 +102,7 @@
         {:else}
           <p>{$t('shared')}</p>
         {/if}
-      {:else if album.shared}
+      {:else if albumDetail.shared}
         <p>{$t('shared')}</p>
       {/if}
     </span>

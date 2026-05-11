@@ -15,12 +15,13 @@
 </script>
 
 {#if isBroken}
-  <BrokenAsset hideMessage class="aspect-square rounded-xl" />
+  <BrokenAsset hideMessage class="aspect-square" />
 {:else}
   <img
     {alt}
     onerror={() => (isBroken = true)}
-    class={cleanClass('size-full rounded-xl object-cover aspect-square', className)}
+    class={cleanClass('object-cover', className)}
+    style="aspect-ratio: 9/16; object-position: center"
     data-testid="album-image"
     draggable="false"
     loading={preload ? 'eager' : 'lazy'}

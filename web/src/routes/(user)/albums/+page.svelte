@@ -44,7 +44,7 @@
   </div>
 
   <Albums
-    ownedAlbums={data.albums}
+    ownedAlbums={data.albums.slice(0, 50)}
     sharedAlbums={data.sharedAlbums}
     userSettings={$albumViewSettings}
     allowEdit

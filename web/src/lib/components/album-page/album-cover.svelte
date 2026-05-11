@@ -17,9 +17,17 @@
   let thumbnailUrl = $derived(
     album.albumThumbnailAssetId ? getAssetMediaUrl({ id: album.albumThumbnailAssetId }) : null,
   );
+  let fullUrl = $derived(
+    album["assets"][0].originalFileName
+  )
+
+  // this works!
+  console.log(album["assets"])
 </script>
 
-{#if thumbnailUrl}
+{#if fullUrl}
+  <AssetCover {alt} class={className} src={fullUrl} />
+{:else if thumbnailUrl}
   <AssetCover {alt} class={className} src={thumbnailUrl} {preload} />
 {:else}
   <NoCover {alt} class={className} {preload} />
