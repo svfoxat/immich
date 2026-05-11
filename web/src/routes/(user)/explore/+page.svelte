@@ -50,20 +50,20 @@
           draggable="false">{$t('view_all')}</a
         >
       </div>
-      <SingleGridRow class="grid grid-flow-col md:grid-auto-fill-28 grid-auto-fill-20 gap-x-4">
+      <SingleGridRow class="grid grid-flow-col md:grid-auto-fill-28 grid-auto-fill-20 gap-x-1">
         {#snippet children({ itemCount })}
           {#each people.slice(0, itemCount) as person (person.id)}
             <a href={Route.viewPerson(person)} class="text-center relative">
               <ImageThumbnail
-                circle
                 shadow
                 url={getPeopleThumbnailUrl(person)}
                 altText={person.name}
                 widthStyle="100%"
+                heightStyle="200px"
               />
               {#if person.isFavorite}
                 <div class="absolute top-2 start-2">
-                  <Icon icon={mdiHeart} size="24" class="text-white" />
+                  <Icon icon={mdiHeart} size="24" class="text-white-shadow" />
                 </div>
               {/if}
               <p class="mt-2 text-ellipsis text-sm font-medium dark:text-white">{person.name}</p>
